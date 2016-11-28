@@ -1,0 +1,10 @@
+{
+    "require": {
+        "slim/slim": "^3.6",
+        "slim/php-view": "^2.1",
+        "mailgun/mailgun-php": "^2.1",
+        "google/recaptcha": "^1.1",
+        "dominionenterprises/filter": "^2.0",
+        "dominionenterprises/util": "^2.0"
+    }
+}
