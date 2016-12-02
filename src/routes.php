@@ -18,9 +18,15 @@ $app->post('/contact', function ($request, $response, $args) {
             'name' => [['string'], ['strip_tags']],
             'subject' => [['string'], ['strip_tags']],
             'message' => [['string'], ['strip_tags']],
+            'g-recaptcha-response' => [['string']],
         ];
-        list($success, $filteredInput, $error) = Filterer::filter($filters, $request->getParsedBody(), ['allowUnknown' => true]);
+        list($success, $filteredInput, $error) = Filterer::filter($filters, $request->getParsedBody());
         Util::ensure(true, $success, $error);
+
+        $recaptchaResponse = $filteredInput['g-recaptcha-response'];
+        $remoteIp = $request->getAttribute('ip_address');
+        $verifyResponse = $recaptcha->verify($gRecaptchaResponse, $remoteIp);
+        Util::ensure(true, $verifyResponse->isSuccess(), $verifyRepsonse->getErrorCodes());
 
         $this->mailgun->sendMessage(
             getenv('MAILGUN_DOMAIN'),
@@ -32,7 +38,7 @@ $app->post('/contact', function ($request, $response, $args) {
             ]
         );
     } catch (Exception $e) {
-        $message = "Unable to send email. Check all input fields";
+        $message = $e->getMessage();
         $success = false;
     }
 
