@@ -25,7 +25,7 @@ $app->post('/contact', function ($request, $response, $args) {
 
         $recaptchaResponse = $filteredInput['g-recaptcha-response'];
         $remoteIp = $request->getAttribute('ip_address');
-        $verifyResponse = $recaptcha->verify($gRecaptchaResponse, $remoteIp);
+        $verifyResponse = $this->recaptcha->verify($gRecaptchaResponse, $remoteIp);
         Util::ensure(true, $verifyResponse->isSuccess(), $verifyRepsonse->getErrorCodes());
 
         $this->mailgun->sendMessage(
