@@ -23,10 +23,10 @@ $app->post('/contact', function ($request, $response, $args) {
         list($success, $filteredInput, $error) = Filterer::filter($filters, $request->getParsedBody());
         Util::ensure(true, $success, $error);
 
-        $recaptchaResponse = $filteredInput['g-recaptcha-response'];
+        $gRecaptchaResponse = $filteredInput['g-recaptcha-response'];
         $remoteIp = $request->getAttribute('ip_address');
         $verifyResponse = $this->recaptcha->verify($gRecaptchaResponse, $remoteIp);
-        Util::ensure(true, $verifyResponse->isSuccess(), $verifyRepsonse->getErrorCodes());
+        Util::ensure(true, $verifyResponse->isSuccess(), $verifyResponse->getErrorCodes());
 
         $this->mailgun->sendMessage(
             getenv('MAILGUN_DOMAIN'),
