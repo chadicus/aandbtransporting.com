@@ -10,26 +10,31 @@ $app->get('/', function ($request, $response, $args) {
 });
 
 $app->post('/contact', function ($request, $response, $args) {
+    error_log('in contact post');
     $success = false;
     $message = 'Unknown Error';
+    error_log(getenv('CONTACT_EMAIL'));
     try {
         $filters = [
-            'from' => [['email']],
+            'email' => [['email']],
+            'name' => [['string'], ['strip_tags']],
             'subject' => [['string'], ['strip_tags']],
-            'text' => [['string'], ['strip_tags']],
+            'message' => [['string'], ['strip_tags']],
         ];
-        list($success, $filteredInput, $error) = Filterer::filter($filters, $request->getParsedBody(), true);
-        Util::ensur(true, $success, $error);
+        list($success, $filteredInput, $error) = Filterer::filter($filters, $request->getParsedBody());
+        Util::ensure(true, $success, $error);
 
+        /**
         $this->mailgun->sendMessage(
 		    getenv('MAILGUN_DOMAIN'),
 		    [
-        	    'from' => $from,
+        	    'from' => $filteredInput['email'],
                 'to' => getenv('CONTACT_EMAIL'),
-                'subject' => $subject,
-                'text' => $text,
+                'subject' => $filteredInput['subject'],
+                'text' => "{$filteredInput['message']}\n\n{$filteredInput['name']}",
 		    ]
         );
+        */
     } catch (Exception $e) {
         $message = $e->getMessage();
         $success = false;
