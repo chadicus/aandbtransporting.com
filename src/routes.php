@@ -10,10 +10,8 @@ $app->get('/', function ($request, $response, $args) {
 });
 
 $app->post('/contact', function ($request, $response, $args) {
-    error_log('in contact post');
     $success = false;
     $message = 'Unknown Error';
-    error_log(getenv('CONTACT_EMAIL'));
     try {
         $filters = [
             'email' => [['email']],
