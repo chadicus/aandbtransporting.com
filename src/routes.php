@@ -21,29 +21,27 @@ $app->post('/contact', function ($request, $response, $args) {
             'subject' => [['string'], ['strip_tags']],
             'message' => [['string'], ['strip_tags']],
         ];
-        list($success, $filteredInput, $error) = Filterer::filter($filters, $request->getParsedBody());
+        list($success, $filteredInput, $error) = Filterer::filter($filters, $request->getParsedBody(), ['allowUnknown' => true]);
         Util::ensure(true, $success, $error);
 
-        /**
         $this->mailgun->sendMessage(
-		    getenv('MAILGUN_DOMAIN'),
-		    [
-        	    'from' => $filteredInput['email'],
+            getenv('MAILGUN_DOMAIN'),
+            [
+                'from' => $filteredInput['email'],
                 'to' => getenv('CONTACT_EMAIL'),
                 'subject' => $filteredInput['subject'],
                 'text' => "{$filteredInput['message']}\n\n{$filteredInput['name']}",
-		    ]
+            ]
         );
-        */
     } catch (Exception $e) {
-        $message = $e->getMessage();
+        $message = "Unable to send email. Check all input fields";
         $success = false;
     }
 
-	$result = [
+    $result = [
         'success' => $success,
         'message' => $message,
-	];
+    ];
 
     $stream = fopen('php://temp', 'r+');
     fwrite($stream, json_encode($result));
